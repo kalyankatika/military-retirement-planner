@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Retirement Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/calculations.js') }}" defer></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold">Military Retirement Planner</a>
+            <ul class="flex space-x-4">
+                <li><a href="/" class="hover:underline">Dashboard</a></li>
+                <li><a href="/benefits" class="hover:underline">Benefits</a></li>
+                <li><a href="/spending" class="hover:underline">Spending</a></li>
+                <li><a href="/debt" class="hover:underline">Debt</a></li>
+                <li><a href="/employment" class="hover:underline">Employment</a></li>
+                <li><a href="/goals" class="hover:underline">Goals</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="container mx-auto mt-8 p-4">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
