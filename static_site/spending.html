@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spending Tracker - Military Retirement Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold">Military Retirement Planner</a>
+            <ul class="flex space-x-4">
+                <li><a href="index.html" class="hover:underline">Dashboard</a></li>
+                <li><a href="benefits.html" class="hover:underline">Benefits</a></li>
+                <li><a href="spending.html" class="hover:underline">Spending</a></li>
+                <li><a href="debt.html" class="hover:underline">Debt</a></li>
+                <li><a href="employment.html" class="hover:underline">Employment</a></li>
+                <li><a href="goals.html" class="hover:underline">Goals</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="container mx-auto mt-8 p-4">
+        <h1 class="text-3xl font-bold mb-6">Spending Tracker</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Add Expense</h2>
+                <form id="expense-form">
+                    <div class="mb-4">
+                        <label for="expense-category" class="block mb-2">Category</label>
+                        <select id="expense-category" name="category" class="w-full p-2 border rounded" required>
+                            <option value="housing">Housing</option>
+                            <option value="transportation">Transportation</option>
+                            <option value="food">Food</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="personal">Personal</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="expense-amount" class="block mb-2">Amount</label>
+                        <input type="number" id="expense-amount" name="amount" step="0.01" class="w-full p-2 border rounded" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="expense-date" class="block mb-2">Date</label>
+                        <input type="date" id="expense-date" name="date" class="w-full p-2 border rounded" required>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Expense</button>
+                </form>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Spending Overview</h2>
+                <canvas id="spending-chart"></canvas>
+            </div>
+        </div>
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Recent Expenses</h2>
+            <table id="expenses-table" class="w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Date</th>
+                        <th class="text-left">Category</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Expenses will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const expenseForm = document.getElementById('expense-form');
+        const expensesTable = document.getElementById('expenses-table').getElementsByTagName('tbody')[0];
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        let spendingChart;
+
+        expenseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(expenseForm);
+            const expense = {
+                category: formData.get('category'),
+                amount: parseFloat(formData.get('amount')),
+                date: formData.get('date')
+            };
+            expenses.push(expense);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            addExpenseToTable(expense);
+            updateSpendingChart();
+            expenseForm.reset();
+        });
+
+        function addExpenseToTable(expense) {
+            const row = expensesTable.insertRow(0);
+            row.innerHTML = `
+                <td>${expense.date}</td>
+                <td>${expense.category}</td>
+                <td class="text-right">$${expense.amount.toFixed(2)}</td>
+            `;
+        }
+
+        function updateSpendingChart() {
+            const ctx = document.getElementById('spending-chart').getContext('2d');
+            const categoryTotals = expenses.reduce((acc, expense) => {
+                acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+                return acc;
+            }, {});
+
+            if (spendingChart) {
+                spendingChart.destroy();
+            }
+
+            spendingChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryTotals),
+                    datasets: [{
+                        data: Object.values(categoryTotals),
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Spending by Category'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initial load of expenses and chart
+        expenses.forEach(addExpenseToTable);
+        updateSpendingChart();
+    });
+    </script>
+</body>
+</html>
