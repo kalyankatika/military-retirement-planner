@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Scenario Comparison</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Scenario 1: Military Retiree</h2>
+        <form id="scenario1-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="mil-retirement" class="block mb-2">Military Retirement (monthly)</label>
+                <input type="number" id="mil-retirement" name="mil_retirement" value="4000" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="va-disability" class="block mb-2">VA Disability (monthly)</label>
+                <input type="number" id="va-disability" name="va_disability" value="3000" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="tsp-balance" class="block mb-2">TSP Balance</label>
+                <input type="number" id="tsp-balance" name="tsp_balance" value="100000" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="annual-salary" class="block mb-2">Post-Military Annual Salary</label>
+                <input type="number" id="annual-salary" name="annual_salary" value="150000" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="savings-rate" class="block mb-2">401K Savings Rate (%)</label>
+                <input type="number" id="savings-rate" name="savings_rate" value="15" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="rate-of-return" class="block mb-2">Rate of Return (%)</label>
+                <input type="number" id="rate-of-return" name="rate_of_return" value="10" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+            </div>
+        </form>
+        <div id="scenario1-result" class="mt-4"></div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Scenario 2: FidServe Retiree</h2>
+        <form id="scenario2-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="fidserve-mil-retirement" class="block mb-2">Military Retirement (monthly)</label>
+                <input type="number" id="fidserve-mil-retirement" name="mil_retirement" value="4000" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="fidserve-va-disability" class="block mb-2">VA Disability (monthly)</label>
+                <input type="number" id="fidserve-va-disability" name="va_disability" value="3000" class="w-full p-2 border rounded" required>
+            </div>
+            <div>
+                <label for="fidserve-rate-of-return" class="block mb-2">Rate of Return (%)</label>
+                <input type="number" id="fidserve-rate-of-return" name="rate_of_return" value="10" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="md:col-span-2">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+            </div>
+        </form>
+        <div id="scenario2-result" class="mt-4"></div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const scenario1Form = document.getElementById('scenario1-form');
+    const scenario2Form = document.getElementById('scenario2-form');
+
+    scenario1Form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(scenario1Form);
+        const data = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch('/calculate_scenario1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            updateScenario1Result(result);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    scenario2Form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(scenario2Form);
+        const data = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch('/calculate_scenario2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            updateScenario2Result(result);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+});
+
+function updateScenario1Result(data) {
+    const resultElement = document.getElementById('scenario1-result');
+    resultElement.innerHTML = `
+        <p>Total Savings after 20 years: $${data.total_savings.toFixed(2)}</p>
+        <p>Income Replacement: ${data.income_replacement.toFixed(2)}%</p>
+    `;
+}
+
+function updateScenario2Result(data) {
+    const resultElement = document.getElementById('scenario2-result');
+    resultElement.innerHTML = `
+        <p>Total Savings after 20 years: $${data.total_savings.toFixed(2)}</p>
+        <p>Income Replacement: ${data.income_replacement.toFixed(2)}%</p>
+    `;
+}
+</script>
+{% endblock %}
