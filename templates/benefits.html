@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Military Benefits</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Military Retirement</h2>
+        <form id="military-retirement-form">
+            <div class="mb-4">
+                <label for="years-of-service" class="block mb-2">Years of Service</label>
+                <input type="number" id="years-of-service" name="years_of_service" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="mb-4">
+                <label for="high-36" class="block mb-2">High-36 Average</label>
+                <input type="number" id="high-36" name="high_36" class="w-full p-2 border rounded" required>
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+        </form>
+        <div id="military-retirement-result" class="mt-4"></div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">VA Disability</h2>
+        <form id="va-disability-form">
+            <div class="mb-4">
+                <label for="disability-rating" class="block mb-2">Disability Rating (%)</label>
+                <input type="number" id="disability-rating" name="disability_rating" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="mb-4">
+                <label for="dependents" class="block mb-2">Number of Dependents</label>
+                <input type="number" id="dependents" name="dependents" class="w-full p-2 border rounded" required>
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Calculate</button>
+        </form>
+        <div id="va-disability-result" class="mt-4"></div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const militaryRetirementForm = document.getElementById('military-retirement-form');
+    const vaDisabilityForm = document.getElementById('va-disability-form');
+
+    militaryRetirementForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const yearsOfService = parseFloat(document.getElementById('years-of-service').value);
+        const high36 = parseFloat(document.getElementById('high-36').value);
+        const retirementPay = calculateMilitaryRetirement(yearsOfService, high36);
+        document.getElementById('military-retirement-result').textContent = `Estimated monthly retirement pay: $${retirementPay.toFixed(2)}`;
+    });
+
+    vaDisabilityForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const disabilityRating = parseFloat(document.getElementById('disability-rating').value);
+        const dependents = parseInt(document.getElementById('dependents').value);
+        const disabilityPay = calculateVADisability(disabilityRating, dependents);
+        document.getElementById('va-disability-result').textContent = `Estimated monthly disability pay: $${disabilityPay.toFixed(2)}`;
+    });
+});
+
+function calculateMilitaryRetirement(yearsOfService, high36) {
+    const multiplier = yearsOfService * 0.025; // 2.5% per year
+    return high36 * multiplier;
+}
+
+function calculateVADisability(rating, dependents) {
+    // This is a simplified calculation and should be replaced with actual VA disability pay tables
+    const baseRate = 1000; // Example base rate
+    const rateMultiplier = rating / 100;
+    const dependentAddition = dependents * 50; // Example additional amount per dependent
+    return baseRate * rateMultiplier + dependentAddition;
+}
+</script>
+{% endblock %}
