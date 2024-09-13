@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Retirement Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold">Military Retirement Planner</a>
+            <ul class="flex space-x-4">
+                <li><a href="index.html" class="hover:underline">Dashboard</a></li>
+                <li><a href="benefits.html" class="hover:underline">Benefits</a></li>
+                <li><a href="spending.html" class="hover:underline">Spending</a></li>
+                <li><a href="debt.html" class="hover:underline">Debt</a></li>
+                <li><a href="employment.html" class="hover:underline">Employment</a></li>
+                <li><a href="goals.html" class="hover:underline">Goals</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="container mx-auto mt-8 p-4">
+        <h1 class="text-3xl font-bold mb-6">Military Retirement Planner Dashboard</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Retirement Calculation Form -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Retirement Calculator</h2>
+                <form id="retirement-form" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="mil-retirement" class="block text-sm font-medium text-gray-700">Military Retirement (monthly)</label>
+                            <input type="number" id="mil-retirement" name="mil_retirement" value="4000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="va-disability" class="block text-sm font-medium text-gray-700">VA Disability (monthly)</label>
+                            <input type="number" id="va-disability" name="va_disability" value="3000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="tsp-balance" class="block text-sm font-medium text-gray-700">TSP Balance</label>
+                            <input type="number" id="tsp-balance" name="tsp_balance" value="100000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="annual-salary" class="block text-sm font-medium text-gray-700">Post-Military Annual Salary</label>
+                            <input type="number" id="annual-salary" name="annual_salary" value="150000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="savings-rate" class="block text-sm font-medium text-gray-700">401K Savings Rate (%)</label>
+                            <input type="number" id="savings-rate" name="savings_rate" value="15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                        <div>
+                            <label for="rate-of-return" class="block text-sm font-medium text-gray-700">Rate of Return (%)</label>
+                            <input type="number" id="rate-of-return" name="rate_of_return" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Calculate</button>
+                </form>
+                <div id="retirement-result" class="mt-4"></div>
+            </div>
+
+            <!-- Retirement Savings Projection Chart -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Retirement Savings Projection</h2>
+                <canvas id="retirement-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Additional Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <!-- Financial Overview -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Financial Overview</h2>
+                <div id="financial-overview">
+                    <p>Total Assets: $<span id="total-assets">0</span></p>
+                    <p>Total Debts: $<span id="total-debts">0</span></p>
+                    <p>Net Worth: $<span id="net-worth">0</span></p>
+                    <p>Monthly Income: $<span id="monthly-income">0</span></p>
+                    <p>Monthly Expenses: $<span id="monthly-expenses">0</span></p>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Recent Transactions</h2>
+                <ul id="recent-transactions" class="space-y-2">
+                    <li>No recent transactions</li>
+                </ul>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Quick Links</h2>
+                <ul class="space-y-2">
+                    <li><a href="benefits.html" class="text-blue-600 hover:underline">Military Benefits</a></li>
+                    <li><a href="spending.html" class="text-blue-600 hover:underline">Spending Tracker</a></li>
+                    <li><a href="debt.html" class="text-blue-600 hover:underline">Debt Management</a></li>
+                    <li><a href="employment.html" class="text-blue-600 hover:underline">Employment Information</a></li>
+                    <li><a href="goals.html" class="text-blue-600 hover:underline">Financial Goals</a></li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const retirementForm = document.getElementById('retirement-form');
+        let retirementChart;
+
+        // Initialize the chart with placeholder data
+        updateRetirementChart(generatePlaceholderData());
+
+        retirementForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(retirementForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Calculate results using the form data
+            const result = calculateRetirement(data);
+            updateRetirementResult(result);
+            updateRetirementChart(result.yearly_savings);
+            updateFinancialOverview(result);
+        });
+
+        function calculateRetirement(data) {
+            const mil_retirement = parseFloat(data.mil_retirement);
+            const va_disability = parseFloat(data.va_disability);
+            const tsp_balance = parseFloat(data.tsp_balance);
+            const annual_salary = parseFloat(data.annual_salary);
+            const savings_rate = parseFloat(data.savings_rate) / 100;
+            const rate_of_return = parseFloat(data.rate_of_return) / 100;
+
+            const annual_savings = annual_salary * savings_rate;
+            let total_savings = tsp_balance;
+            const yearly_savings = [total_savings];
+
+            for (let i = 0; i < 20; i++) {
+                total_savings = total_savings * (1 + rate_of_return) + annual_savings;
+                yearly_savings.push(total_savings);
+            }
+
+            const annual_retirement_income = (mil_retirement + va_disability) * 12;
+            const income_replacement = (annual_retirement_income / annual_salary) * 100;
+
+            return {
+                total_savings: total_savings,
+                annual_retirement_income: annual_retirement_income,
+                income_replacement: income_replacement,
+                yearly_savings: yearly_savings,
+                monthly_income: (annual_salary / 12) + mil_retirement + va_disability
+            };
+        }
+
+        function updateRetirementResult(data) {
+            const resultElement = document.getElementById('retirement-result');
+            resultElement.innerHTML = `
+                <h3 class="text-lg font-semibold mb-2">Retirement Calculation Results:</h3>
+                <p>Total Savings after 20 years: $${data.total_savings.toFixed(2)}</p>
+                <p>Annual Retirement Income: $${data.annual_retirement_income.toFixed(2)}</p>
+                <p>Income Replacement: ${data.income_replacement.toFixed(2)}%</p>
+            `;
+        }
+
+        function updateRetirementChart(yearlySavings) {
+            const ctx = document.getElementById('retirement-chart').getContext('2d');
+            
+            if (retirementChart) {
+                retirementChart.destroy();
+            }
+
+            retirementChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: yearlySavings.length}, (_, i) => i),
+                    datasets: [{
+                        label: 'Projected Savings',
+                        data: yearlySavings,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Retirement Savings Projection'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Years'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Savings ($)'
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generatePlaceholderData() {
+            const initialSavings = 100000;
+            const yearlyContribution = 22500; // 15% of 150000
+            const rateOfReturn = 0.10;
+            const years = 21; // 0 to 20 years
+
+            let savings = initialSavings;
+            const yearlySavings = [savings];
+
+            for (let i = 1; i < years; i++) {
+                savings = savings * (1 + rateOfReturn) + yearlyContribution;
+                yearlySavings.push(savings);
+            }
+
+            return yearlySavings;
+        }
+
+        function updateFinancialOverview(data) {
+            document.getElementById('total-assets').textContent = data.total_savings.toFixed(2);
+            document.getElementById('total-debts').textContent = '0.00'; // Placeholder
+            document.getElementById('net-worth').textContent = data.total_savings.toFixed(2);
+            document.getElementById('monthly-income').textContent = data.monthly_income.toFixed(2);
+            document.getElementById('monthly-expenses').textContent = '0.00'; // Placeholder
+        }
+
+        // Initialize Financial Overview with placeholder data
+        updateFinancialOverview({
+            total_savings: 100000,
+            monthly_income: 12500
+        });
+
+        // Placeholder for recent transactions
+        const recentTransactions = [
+            { date: '2024-09-10', description: 'Grocery Shopping', amount: -150.75 },
+            { date: '2024-09-08', description: 'TSP Contribution', amount: 500.00 },
+            { date: '2024-09-05', description: 'Utility Bill', amount: -200.00 }
+        ];
+
+        const transactionsList = document.getElementById('recent-transactions');
+        transactionsList.innerHTML = recentTransactions.map(transaction => `
+            <li class="flex justify-between">
+                <span>${transaction.date} - ${transaction.description}</span>
+                <span class="${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+                    $${Math.abs(transaction.amount).toFixed(2)}
+                </span>
+            </li>
+        `).join('');
+    });
+    </script>
+</body>
+</html>
