@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employment Information - Military Retirement Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold">Military Retirement Planner</a>
+            <ul class="flex space-x-4">
+                <li><a href="index.html" class="hover:underline">Dashboard</a></li>
+                <li><a href="benefits.html" class="hover:underline">Benefits</a></li>
+                <li><a href="spending.html" class="hover:underline">Spending</a></li>
+                <li><a href="debt.html" class="hover:underline">Debt</a></li>
+                <li><a href="employment.html" class="hover:underline">Employment</a></li>
+                <li><a href="goals.html" class="hover:underline">Goals</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="container mx-auto mt-8 p-4">
+        <h1 class="text-3xl font-bold mb-6">Employment Information</h1>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <form id="employment-form">
+                <div class="mb-4">
+                    <label for="employment-status" class="block mb-2">Current Employment Status</label>
+                    <select id="employment-status" name="status" class="w-full p-2 border rounded" required>
+                        <option value="employed">Employed</option>
+                        <option value="unemployed">Unemployed</option>
+                        <option value="retired">Retired</option>
+                        <option value="transitioning">Transitioning from Military</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="current-employer" class="block mb-2">Current Employer</label>
+                    <input type="text" id="current-employer" name="employer" class="w-full p-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="current-salary" class="block mb-2">Current Annual Salary</label>
+                    <input type="number" id="current-salary" name="salary" step="1000" class="w-full p-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="future-career" class="block mb-2">Future Career Goals</label>
+                    <textarea id="future-career" name="career_goals" class="w-full p-2 border rounded" rows="3"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="job-search-status" class="block mb-2">Job Search Status</label>
+                    <select id="job-search-status" name="job_search" class="w-full p-2 border rounded" required>
+                        <option value="not-looking">Not Currently Looking</option>
+                        <option value="passive">Passive Job Seeker</option>
+                        <option value="active">Active Job Seeker</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Employment Information</button>
+            </form>
+        </div>
+    </main>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const employmentForm = document.getElementById('employment-form');
+        
+        employmentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(employmentForm);
+            const employmentInfo = Object.fromEntries(formData.entries());
+            
+            // Save to localStorage (in a real app, you'd send this to a server)
+            localStorage.setItem('employmentInfo', JSON.stringify(employmentInfo));
+            
+            alert('Employment information saved successfully!');
+        });
+        
+        // Load existing data if available
+        const savedInfo = JSON.parse(localStorage.getItem('employmentInfo'));
+        if (savedInfo) {
+            Object.keys(savedInfo).forEach(key => {
+                const field = employmentForm.elements[key];
+                if (field) {
+                    field.value = savedInfo[key];
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
